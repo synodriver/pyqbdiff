@@ -1,0 +1,161 @@
+# -*- coding: utf-8 -*-
+import glob
+import os
+import re
+import sys
+from collections import defaultdict
+
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    Cython = None
+from setuptools import Extension, find_packages, setup
+from setuptools.command.build_ext import build_ext
+
+BUILD_ARGS = defaultdict(lambda: ["-O3", "-g0"])
+
+for compiler, args in [
+    ("msvc", ["/EHsc", "/DHUNSPELL_STATIC", "/Oi", "/O2", "/Ot"]),
+    ("gcc", ["-O3", "-g0"]),
+]:
+    BUILD_ARGS[compiler] = args
+
+define_macros = []
+if sys.platform.startswith("win"):
+    extra_compile_args = ["-openmp:experimental"]
+    extra_link_args = ["-openmp:experimental"]
+    define_macros.append(("LIBQDIFF_PUBLIC_API", "__declspec(dllexport)"))
+elif sys.platform.startswith("darwin"):
+    os.system("brew install libomp")
+    extra_compile_args = ["-Xpreprocessor", "-fopenmp"]
+    extra_link_args = ["-L/usr/local/lib", "-lomp"]
+else:
+    extra_compile_args = ["-fopenmp"]
+    extra_link_args = ["-fopenmp"]
+
+
+def has_option(name: str) -> bool:
+    if name in sys.argv[1:]:
+        sys.argv.remove(name)
+        return True
+    return False
+
+
+class build_ext_compiler_check(build_ext):
+    def build_extensions(self):
+        compiler = self.compiler.compiler_type
+        args = BUILD_ARGS[compiler]
+        for ext in self.extensions:
+            ext.extra_compile_args.extend(args)
+            # if self.compiler.compiler_type == "msvc":
+            #     ext.define_macros.extend([("restrict", "__restrict")])
+        super().build_extensions()
+
+
+c_sources = ["qbdiff/backends/cython/_qbdiff.pyx"] + [
+    "./dep/src/blake2b.c",
+    "./dep/src/libqbdiff.c",
+    "./dep/src/libsais.c",
+    "./dep/src/libsais64.c",
+]
+
+extensions = [
+    Extension(
+        "qbdiff.backends.cython._qbdiff",
+        c_sources,
+        include_dirs=["./dep/include", os.getenv("INCLUDE", "")],
+        define_macros=define_macros,
+        extra_compile_args=extra_compile_args,
+        extra_link_args=extra_link_args,
+        extra_objects=[os.getenv("LIB", "")],
+    ),
+]
+cffi_modules = ["qbdiff/backends/cffi/build.py:ffibuilder"]
+
+
+def get_dis():
+    with open("README.markdown", "r", encoding="utf-8") as f:
+        return f.read()
+
+
+def get_version() -> str:
+    path = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "qbdiff", "__init__.py"
+    )
+    with open(path, "r", encoding="utf-8") as f:
+        data = f.read()
+    result = re.findall(r"(?<=__version__ = \")\S+(?=\")", data)
+    return result[0]
+
+
+packages = find_packages(exclude=("test", "tests.*", "test*"))
+
+setup_requires = []
+install_requires = []
+setup_kw = {}
+if has_option("--use-cython"):
+    print("building cython")
+    setup_requires.append("cython")
+    setup_kw["ext_modules"] = cythonize(
+        extensions,
+        compiler_directives={
+            "cdivision": True,
+            "embedsignature": True,
+            "boundscheck": False,
+            "wraparound": False,
+        },
+    )
+if has_option("--use-cffi"):
+    print("building cffi")
+    setup_requires.append("cffi>=1.0.0")
+    install_requires.append("cffi>=1.0.0")
+    setup_kw["cffi_modules"] = cffi_modules
+
+
+def main():
+    version: str = get_version()
+
+    dis = get_dis()
+    setup(
+        name="qbdiff",
+        version=version,
+        url="https://github.com/synodriver/pyqbdiff",
+        packages=packages,
+        keywords=["qbdiff", "delta", "path"],
+        description="python binding for qbdiff",
+        long_description_content_type="text/markdown",
+        long_description=dis,
+        author="synodriver",
+        author_email="diguohuangjiajinweijun@gmail.com",
+        python_requires=">=3.6",
+        setup_requires=setup_requires,
+        install_requires=install_requires,
+        license="BSD",
+        classifiers=[
+            "Development Status :: 4 - Beta",
+            "Operating System :: OS Independent",
+            "Topic :: System :: Archiving",
+            "Topic :: System :: Archiving :: Compression",
+            "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+            "Programming Language :: C",
+            "Programming Language :: Cython",
+            "Programming Language :: Python",
+            "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11",
+            "Programming Language :: Python :: 3.12",
+            "Programming Language :: Python :: Implementation :: CPython",
+            "Programming Language :: Python :: Implementation :: PyPy",
+        ],
+        include_package_data=True,
+        zip_safe=False,
+        cmdclass={"build_ext": build_ext_compiler_check},
+        **setup_kw
+    )
+
+
+if __name__ == "__main__":
+    main()

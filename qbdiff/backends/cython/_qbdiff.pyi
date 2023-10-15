@@ -1,0 +1,13 @@
+QBERR_BADCKSUM: int
+QBERR_BADPATCH: int
+QBERR_IOERR: int
+QBERR_LZMAERR: int
+QBERR_NOMEM: int
+QBERR_OK: int
+QBERR_SAIS: int
+QBERR_TRUNCPATCH: int
+
+def version() -> str: ...
+def error(code: int) -> str: ...
+def compute(old: bytes, new_: bytes, diff_file: str) -> int: ...
+def patch(old: bytes, patch_: bytes, new_file: str) -> int: ...
