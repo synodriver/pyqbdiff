@@ -1,8 +1,37 @@
+Metadata-Version: 2.1
+Name: qbdiff
+Version: 0.0.1.dev1
+Summary: python binding for qbdiff
+Home-page: https://github.com/synodriver/pyqbdiff
+Author: synodriver
+Author-email: diguohuangjiajinweijun@gmail.com
+License: BSD
+Keywords: qbdiff,delta,path
+Classifier: Development Status :: 4 - Beta
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: System :: Archiving
+Classifier: Topic :: System :: Archiving :: Compression
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)
+Classifier: Programming Language :: C
+Classifier: Programming Language :: Cython
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
 <h1 align="center"><i>✨ pyqbdiff ✨ </i></h1>
 
 <h3 align="center">The python binding for <a href="https://github.com/kspalaiologos/qbdiff">qbdiff</a></h3>
 
-[![pypi](https://img.shields.io/pypi/v/qbdiff.svg)](https://pypi.org/project/qbdiff/)
+[![pypi](https://img.shields.io/pypi/v/bzip3.svg)](https://pypi.org/project/qbdiff/)
 ![python](https://img.shields.io/pypi/pyversions/qbdiff)
 ![implementation](https://img.shields.io/pypi/implementation/qbdiff)
 ![wheel](https://img.shields.io/pypi/wheel/qbdiff)

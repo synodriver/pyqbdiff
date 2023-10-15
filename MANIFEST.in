@@ -1,0 +1,3 @@
+recursive-include dep *
+recursive-include qbdiff  *
+include README.markdown
