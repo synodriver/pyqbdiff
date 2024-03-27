@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: qbdiff
-Version: 0.0.1.dev1
+Version: 0.0.1
 Summary: python binding for qbdiff
 Home-page: https://github.com/synodriver/pyqbdiff
 Author: synodriver
@@ -31,7 +31,7 @@ Description-Content-Type: text/markdown
 
 <h3 align="center">The python binding for <a href="https://github.com/kspalaiologos/qbdiff">qbdiff</a></h3>
 
-[![pypi](https://img.shields.io/pypi/v/bzip3.svg)](https://pypi.org/project/qbdiff/)
+[![pypi](https://img.shields.io/pypi/v/qbdiff.svg)](https://pypi.org/project/qbdiff/)
 ![python](https://img.shields.io/pypi/pyversions/qbdiff)
 ![implementation](https://img.shields.io/pypi/implementation/qbdiff)
 ![wheel](https://img.shields.io/pypi/wheel/qbdiff)

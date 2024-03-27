@@ -1,6 +1,16 @@
+.gitignore
+.gitmodules
 MANIFEST.in
 README.markdown
+changename.py
 setup.py
+./dep/src/blake2b.c
+./dep/src/libqbdiff.c
+./dep/src/libsais.c
+./dep/src/libsais64.c
+.github/workflows/build_whl.yml
+.github/workflows/unitest.yml
+.github/workflows/upload.yml
 dep/.clang-format
 dep/.git
 dep/.gitattributes
@@ -48,7 +58,9 @@ qbdiff.egg-info/PKG-INFO
 qbdiff.egg-info/SOURCES.txt
 qbdiff.egg-info/dependency_links.txt
 qbdiff.egg-info/not-zip-safe
+qbdiff.egg-info/requires.txt
 qbdiff.egg-info/top_level.txt
+qbdiff/backends/cython/_qbdiff.c
 qbdiff/__pycache__/__init__.cpython-310.pyc
 qbdiff/backends/__init__.py
 qbdiff/backends/__pycache__/__init__.cpython-310.pyc
