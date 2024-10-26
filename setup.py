@@ -7,6 +7,8 @@ from collections import defaultdict
 
 try:
     from Cython.Build import cythonize
+    from Cython.Compiler.Version import version as cython_version
+    from packaging.version import Version
 except ImportError:
     Cython = None
 from setuptools import Extension, find_packages, setup
@@ -33,6 +35,15 @@ else:
     extra_compile_args = ["-fopenmp"]
     extra_link_args = ["-fopenmp"]
 
+if (
+    sys.version_info > (3, 13, 0)
+    and hasattr(sys, "_is_gil_enabled")
+    and not sys._is_gil_enabled()
+):
+    print("build nogil")
+    define_macros.append(
+        ("Py_GIL_DISABLED", "1"),
+    )  # ("CYTHON_METH_FASTCALL", "1"), ("CYTHON_VECTORCALL",  1)]
 
 def has_option(name: str) -> bool:
     if name in sys.argv[1:]:
@@ -93,6 +104,17 @@ def get_version() -> str:
 
 packages = find_packages(exclude=("test", "tests.*", "test*"))
 
+compiler_directives = {
+    "cdivision": True,
+    "embedsignature": True,
+    "boundscheck": False,
+    "wraparound": False,
+}
+
+
+if Version(cython_version) >= Version("3.1.0a0"):
+    compiler_directives["freethreading_compatible"] = True
+
 setup_requires = []
 install_requires = []
 setup_kw = {}
@@ -101,12 +123,7 @@ if has_option("--use-cython"):
     setup_requires.append("Cython>=3.0.9")
     setup_kw["ext_modules"] = cythonize(
         extensions,
-        compiler_directives={
-            "cdivision": True,
-            "embedsignature": True,
-            "boundscheck": False,
-            "wraparound": False,
-        },
+        compiler_directives=compiler_directives,
     )
 if has_option("--use-cffi"):
     print("building cffi")
@@ -148,6 +165,7 @@ def main():
             "Programming Language :: Python :: 3.10",
             "Programming Language :: Python :: 3.11",
             "Programming Language :: Python :: 3.12",
+            "Programming Language :: Python :: 3.13",
             "Programming Language :: Python :: Implementation :: CPython",
             "Programming Language :: Python :: Implementation :: PyPy",
         ],
